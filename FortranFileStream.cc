@@ -39,7 +39,7 @@ extern "C"
 string FortranFileStream::_mkStringFromFortran(char* fstring, size_t length)
 {
   fstring[length] = '\0';
-  for (size_t i = length - 1; i > 0; i--)
+  for (size_t i = length - 1; i >= 0; i--)
   {
     if ( fstring[i] != ' ' )
     {
@@ -94,6 +94,10 @@ void FortranFileStream::popBuffer(int delimiterFindStart)
 
 void FortranFileStream::open(int unitNumber, string path)
 {
+  self_unitNumber = unitNumber;
+  self_filePath = path;
+  self_readBuffer =  "";
+
   ffileopen( unitNumber, path.c_str(), path.length() );
 }
 
@@ -103,8 +107,6 @@ FortranFileStream::FortranFileStream()
 }
 
 FortranFileStream::FortranFileStream(int unitNumber, string path)
-  : self_unitNumber( unitNumber ), self_filePath( path ),
-    self_readBuffer( "" )
 {
   open(unitNumber, path);
 }
@@ -144,7 +146,7 @@ FortranFileStream& FortranFileStream::operator >> (string& target)
     {
       // It's a long inverted comma encapsulated string, so it might
       // contain our delimiters, lets move to the other inverted comma.
-      delimiterFindStart = target.length() + 2; 
+      delimiterFindStart = target.length() + 1; 
     }
 
     popBuffer( delimiterFindStart );

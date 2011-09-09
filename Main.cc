@@ -30,14 +30,20 @@ int main(int argc, char* argv[])
   double a[8];
   STRM >> a[0] >> a[1] >> a[2] >> a[3] >> a[4] >> a[5] >> a[6] >> a[7];
 
-  cout << " " << dummy << " " << version << " " << endl;
-  cout << " " << description << " " << endl;
-  cout << " " << type << " " << order << " " << code << " " << endl;
-  cout << " " << listType << " " << number << " " << repeats << " " << endl;
-  cout << " " << double1 << " " << double2 << " " << double3 << " " 
+  string str1, str2;
+  STRM >> str1 >> str2;
+
+  cout << dummy << " " << version << " " << endl;
+  cout << description << " " << endl;
+  cout << type << " " << order << " " << code << " " << endl;
+  cout << listType << " " << number << " " << repeats << " " << endl;
+  cout << double1 << " " << double2 << " " << double3 << " " 
        << double3 << " " << endl;
-  cout << " " << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << " " 
+  cout << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << " " 
        << a[4] << " " << a[5] << " " << a[6] << " " << a[7] << " " << endl;
+
+  cout << str1 << " " << str2  << " " << endl;
+
 
   return 0;
 }

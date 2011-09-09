@@ -2,6 +2,9 @@ PROGS = Demo
 
 all: $(PROGS)
 
+Main.o: Main.cc
+	gcc -c -o Main.o Main.cc
+
 FortranFileStream.o: FortranFileStream.cc
 	gcc -c -o FortranFileStream.o FortranFileStream.cc
 
