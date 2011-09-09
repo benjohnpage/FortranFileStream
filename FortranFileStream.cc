@@ -85,12 +85,15 @@ void FortranFileStream::popBuffer(int delimiterFindStart)
     self_readBuffer = "";
 }
 
-FortranFileStream::FortranFileStream(int unitNumber, 
-                                                  string path)
+void FortranFileStream::open(int unitNumber, string path)
+{
+  ffileopen( unitNumber, path.c_str(), path.length() );
+}
+FortranFileStream::FortranFileStream(int unitNumber, string path)
   : self_unitNumber( unitNumber ), self_filePath( path ),
     self_readBuffer( "" )
 {
-  ffileopen( unitNumber, path.c_str(), path.length() );
+  open(unitNumber, path);
 }
 
 FortranFileStream::~FortranFileStream()

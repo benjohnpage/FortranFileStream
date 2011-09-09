@@ -20,6 +20,8 @@ namespace LHAPDFTOOLS
       FortranFileStream(int unitNumber, std::string path);
       ~FortranFileStream();
 
+      void open(int unitNumber, std::string path);
+
       //Stream Operators
       FortranFileStream& operator >> (std::string& target);
       FortranFileStream& operator >> (int& target);
