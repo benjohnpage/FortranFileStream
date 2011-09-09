@@ -1,6 +1,13 @@
 #include <string>
 
-//FIXME take out for general compilery stuff
+////////////////////////////////////////////////////////////////////////
+//  Ben Page 09-09-2011 
+//  FortranFileStream:
+//  An interface class for reading in fortran file units as a stream.
+////////////////////////////////////////////////////////////////////////
+
+// NOTE - autoconf like syntax but this should be provided BY autoconf,
+// so take it out in real applications.
 #define FC_FUNC(name, NAME) name ## _
 
 namespace LHAPDFTOOLS
