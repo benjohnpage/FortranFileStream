@@ -1,10 +1,12 @@
-#include <string>
-
 ////////////////////////////////////////////////////////////////////////
 //  Ben Page 09-09-2011 
 //  FortranFileStream:
 //  An interface class for reading in fortran file units as a stream.
 ////////////////////////////////////////////////////////////////////////
+
+#ifndef FORTRANFILESTREAM_INC
+#define FORTRANFILESTREAM_INC
+#include <string>
 
 // NOTE - autoconf like syntax but this should be provided BY autoconf,
 // so take it out in real applications.
@@ -36,3 +38,5 @@ namespace LHAPDFTOOLS
 
   };
 };
+
+#endif
