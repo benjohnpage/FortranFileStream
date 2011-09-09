@@ -96,6 +96,12 @@ void FortranFileStream::open(int unitNumber, string path)
 {
   ffileopen( unitNumber, path.c_str(), path.length() );
 }
+
+FortranFileStream::FortranFileStream()
+  : self_unitNumber(0)
+{
+}
+
 FortranFileStream::FortranFileStream(int unitNumber, string path)
   : self_unitNumber( unitNumber ), self_filePath( path ),
     self_readBuffer( "" )
@@ -105,72 +111,81 @@ FortranFileStream::FortranFileStream(int unitNumber, string path)
 
 FortranFileStream::~FortranFileStream()
 {
-  ffileclose( self_unitNumber );
+  if ( self_unitNumber > 0 )
+    ffileclose( self_unitNumber );
 }
 
 FortranFileStream& FortranFileStream::operator >> (string& target)
 {
-  // Get a new line if there's nothing left
-  if ( self_readBuffer == "" ) 
-    self_readBuffer = readLine();
-
-  // Prepare some memory to be our new string
-  size_t targetBufferSize = 512;
-  char* targetBuffer = (char*) malloc( (targetBufferSize + 1) *
-                                       sizeof(char) );
-  memset( targetBuffer, 0, targetBufferSize );
-
-  fstringreadstring( self_readBuffer.c_str(), targetBuffer, 
-                     self_readBuffer.length(), targetBufferSize );
-  // Set the target
-  target = _mkStringFromFortran(targetBuffer, targetBufferSize);
-
-  // Free the memory
-  free(targetBuffer);
-
-
-  // Tell popBuffer to start cutting after our string
-  size_t delimiterFindStart = 0;
-  if (self_readBuffer.at(0) =='\'')
+  if ( self_unitNumber > 0 )
   {
-    // It's a long inverted comma encapsulated string, so it might
-    // contain our delimiters, lets move to the other inverted comma.
-    delimiterFindStart = target.length() + 2; 
+    // Get a new line if there's nothing left
+    if ( self_readBuffer == "" ) 
+      self_readBuffer = readLine();
+
+    // Prepare some memory to be our new string
+    size_t targetBufferSize = 512;
+    char* targetBuffer = (char*) malloc( (targetBufferSize + 1) *
+                                         sizeof(char) );
+    memset( targetBuffer, 0, targetBufferSize );
+
+    fstringreadstring( self_readBuffer.c_str(), targetBuffer, 
+                       self_readBuffer.length(), targetBufferSize );
+    // Set the target
+    target = _mkStringFromFortran(targetBuffer, targetBufferSize);
+
+    // Free the memory
+    free(targetBuffer);
+
+
+    // Tell popBuffer to start cutting after our string
+    size_t delimiterFindStart = 0;
+    if (self_readBuffer.at(0) =='\'')
+    {
+      // It's a long inverted comma encapsulated string, so it might
+      // contain our delimiters, lets move to the other inverted comma.
+      delimiterFindStart = target.length() + 2; 
+    }
+
+    popBuffer( delimiterFindStart );
+
   }
-
-  popBuffer( delimiterFindStart );
-
   return *this;
 }
 
 FortranFileStream& FortranFileStream::operator >> (int& target)
 {
-  // Get a new line if there's nothing left
-  if ( self_readBuffer == "" ) 
-    self_readBuffer = readLine();
+  if ( self_unitNumber > 0 )
+  {
+    // Get a new line if there's nothing left
+    if ( self_readBuffer == "" ) 
+      self_readBuffer = readLine();
 
-  // Read the integer into the target
-  fstringreadinteger( self_readBuffer.c_str(), target, 
-                      self_readBuffer.length() );
+    // Read the integer into the target
+    fstringreadinteger( self_readBuffer.c_str(), target, 
+                        self_readBuffer.length() );
 
-  popBuffer();
+    popBuffer();
 
+  }
   return *this;
 }
 
-FortranFileStream& FortranFileStream::operator >> (double& 
-                                                                target)
+FortranFileStream& FortranFileStream::operator >> (double& target)
 {
-  // Get a new line if there's nothing left
-  if ( self_readBuffer == "" ) 
-    self_readBuffer = readLine();
+  if ( self_unitNumber > 0 )
+  {
+    // Get a new line if there's nothing left
+    if ( self_readBuffer == "" ) 
+      self_readBuffer = readLine();
 
-  // Read the integer into the target
-  fstringreaddouble( self_readBuffer.c_str(), target, 
-                     self_readBuffer.length() );
+    // Read the integer into the target
+    fstringreaddouble( self_readBuffer.c_str(), target, 
+                       self_readBuffer.length() );
 
-  popBuffer();
+    popBuffer();
 
+  }
   return *this;
 }
 

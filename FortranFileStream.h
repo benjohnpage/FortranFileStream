@@ -27,6 +27,7 @@ namespace LHAPDFTOOLS
 
     public:
       FortranFileStream(int unitNumber, std::string path);
+      FortranFileStream();
       ~FortranFileStream();
 
       void open(int unitNumber, std::string path);
@@ -37,6 +38,6 @@ namespace LHAPDFTOOLS
       FortranFileStream& operator >> (double& target);
 
   };
-};
+}
 
 #endif
