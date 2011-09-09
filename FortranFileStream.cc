@@ -1,3 +1,10 @@
+
+////////////////////////////////////////////////////////////////////////
+//  Ben Page 09-09-2011 
+//  FortranFileStream:
+//  An interface class for reading in fortran file units as a stream.
+////////////////////////////////////////////////////////////////////////
+
 #include "FortranFileStream.h"
 #include <string>
 #include <cstring>
@@ -17,7 +24,7 @@ extern "C"
   #define ffilereadline FC_FUNC(filereadline, FILEREADLINE)
   void ffilereadline(int& unit, char* lineBuff, int lineLength);
 
-  //The ordering of arguments here may well be compiler dependant
+  //NOTE - The ordering of arguments here may well be compiler dependant
   #define fstringreadstring FC_FUNC(stringreadstring, STRINGREADSTRING)
   void fstringreadstring( const char* input, char* output, int inLen, 
                           int outLen );
