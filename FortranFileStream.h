@@ -7,6 +7,7 @@
 #ifndef FORTRANFILESTREAM_INC
 #define FORTRANFILESTREAM_INC
 #include <string>
+#define FC_FUNC( name, NAME ) name ## _
 
 namespace LHAPDFTOOLS
 {

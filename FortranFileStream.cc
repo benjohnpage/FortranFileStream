@@ -6,7 +6,6 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "FortranFileStream.h"
-#include "config.h"
 #include <string>
 #include <cstring>
 #include <cstdlib>
