@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "FortranFileStream.h"
+#include "config.h"
 #include <string>
 #include <cstring>
 #include <cstdlib>
@@ -64,6 +65,11 @@ string FortranFileStream::readLine()
   string line =_mkStringFromFortran(fortranBuffer, bufferSize);
   free(fortranBuffer);
 
+  // Fortran doesn't like reading from strings that contain a string when said
+  // string doesn't have it's terminating apostrophe. Fix this
+  if (line.at(0) == '\'' and line.find_first_of('\'', 1) == string::npos)
+    line += '\'';
+
   //Make sure it finishes with a new line
   line += '\n';
   return line;
@@ -77,6 +83,12 @@ void FortranFileStream::popBuffer(int delimiterFindStart)
 
   char delimiters[] = " ,\n"; //Space, comma, new line
 
+  if (delimiterFindStart == 0)
+  { 
+    // If we're not being told to start explicitly somewhere else, then 
+    // ignore the leading spaces
+    delimiterFindStart = self_readBuffer.find_first_not_of(' ');
+  }
   size_t firstDelimiter = self_readBuffer.find_first_of( delimiters,
                                                     delimiterFindStart);
   
@@ -86,10 +98,10 @@ void FortranFileStream::popBuffer(int delimiterFindStart)
                         .find_first_not_of( delimiters, firstDelimiter);
 
   // Then either snip, or kill it completely!
-  if (nonDelimPos != string::npos)
-    self_readBuffer = self_readBuffer.substr( nonDelimPos );
-  else
+  if (nonDelimPos == string::npos || firstDelimiter == string::npos)
     self_readBuffer = "";
+  else
+    self_readBuffer = self_readBuffer.substr( nonDelimPos );
 }
 
 void FortranFileStream::open(int unitNumber, string path)
@@ -133,6 +145,7 @@ FortranFileStream& FortranFileStream::operator >> (string& target)
 
     fstringreadstring( self_readBuffer.c_str(), targetBuffer, 
                        self_readBuffer.length(), targetBufferSize );
+    
     // Set the target
     target = _mkStringFromFortran(targetBuffer, targetBufferSize);
 
@@ -140,18 +153,40 @@ FortranFileStream& FortranFileStream::operator >> (string& target)
     free(targetBuffer);
 
 
-    // Tell popBuffer to start cutting after our string
     size_t delimiterFindStart = 0;
-    if (self_readBuffer.at(0) =='\'')
+
+    // Tell popBuffer to start cutting after our string
+    size_t firstNonSpace = self_readBuffer.find_first_not_of(' '); 
+    if (self_readBuffer.at( firstNonSpace ) == '\'')
     {
       // It's a long inverted comma encapsulated string, so it might
       // contain our delimiters, lets move to the other inverted comma.
-      delimiterFindStart = target.length() + 1; 
+      if ( target.length() == 0 )
+      {
+        // The "usual" approach is to search for the beginning of the
+        // string to remove. But if it's an empty string, this won't work!
+        // Empty strings occur when the provided string is entirely
+        // whitespace (which _mkFortranString ignores). So find the
+        // second apostrophe!
+        delimiterFindStart = self_readBuffer.find_first_of( '\'', 
+                                                           firstNonSpace + 1 );
+      }
+      else
+      {
+        size_t beginningOfString = self_readBuffer.find(target);
+        size_t endOfString = beginningOfString + target.length();
+        // Then look for the end of the encapsulated string. This may not be
+        // endOfString + 1, due to _mkFortranString ignoring the trailing
+        // whitespace
+        delimiterFindStart = self_readBuffer.find_first_of( '\'', 
+                                                            endOfString );
+      }
+      
     }
 
     popBuffer( delimiterFindStart );
-
   }
+
   return *this;
 }
 
@@ -168,8 +203,8 @@ FortranFileStream& FortranFileStream::operator >> (int& target)
                         self_readBuffer.length() );
 
     popBuffer();
-
   }
+
   return *this;
 }
 
@@ -186,8 +221,8 @@ FortranFileStream& FortranFileStream::operator >> (double& target)
                        self_readBuffer.length() );
 
     popBuffer();
-
   }
+
   return *this;
 }
 

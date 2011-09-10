@@ -8,10 +8,6 @@
 #define FORTRANFILESTREAM_INC
 #include <string>
 
-// NOTE - autoconf like syntax but this should be provided BY autoconf,
-// so take it out in real applications.
-#define FC_FUNC(name, NAME) name ## _
-
 namespace LHAPDFTOOLS
 {
   class FortranFileStream
